@@ -1,0 +1,6 @@
+.taskbar-view {
+    width: 100%;
+    height: 50px;
+    background-color: blue;
+    z-index: 2;
+}

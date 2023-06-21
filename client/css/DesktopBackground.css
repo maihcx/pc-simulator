@@ -1,0 +1,24 @@
+.desktop-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: center;
+}
+.desktop-background[data-scale-type="0"] {
+    background-size: 100% 100%;
+}
+.desktop-background[data-scale-type="1"] {
+    background-size: contain;
+}
+.desktop-background[data-scale-type="2"] {
+    background-size: auto;
+    background-position: 0 0;
+}
+.desktop-background[data-scale-type="3"] {
+    background-size: auto;
+}
