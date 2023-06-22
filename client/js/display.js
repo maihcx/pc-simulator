@@ -1,11 +1,13 @@
 import { MainService } from "./main-service";
+import { SystemEventsManager } from "./system-events-manager";
 
 export class Display {
     /**
      * 
      * @param {MainService} _MainService 
+     * @param {SystemEventsManager} _SystemEventsManager 
      */
-    constructor(_MainService) {
+    constructor(_MainService, _SystemEventsManager) {
         this.MainService = _MainService;
     }
 
