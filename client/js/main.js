@@ -1,10 +1,11 @@
+import { LocalStored } from "./local-stored";
+import { SystemEventsManager } from './system-events-manager';
 import { MainService } from './main-service';
 import { Desktop } from './desktop';
 import { Display } from './display';
 import { Taskbar } from './taskbar';
 import { DesktopBackground } from './desktop-background';
 import { Locales } from './locales';
-import { SystemEventsManager } from './system-events-manager';
 import { SystemColors } from './system-colors';
 
 window.onload = function() {
@@ -35,8 +36,12 @@ window.onload = function() {
     let taskbarElement = taskbar.getSubTaskbar();
     eventManager.event.add('colorchange', function(event, Colors) {
         systemColors.applyBlurFilter(taskbarElement);
-        systemColors.applyBackgroundColor(systemColors.Colors.Color_2, taskbarElement);
-        systemColors.applyBorderColor(systemColors.Colors.Color_3, taskbarElement);
+        systemColors.applyBackgroundColor(systemColors.Colors.level.level2, taskbarElement);
+        systemColors.applyBorderColor(systemColors.Colors.level.level8, taskbarElement);
         // systemColors.applyPrimaryColor(taskbarElement);
-    }, {once: true})
+    }, {once: true});
+
+    eventManager.event.add('systhemechanged', function(event, element) {
+        
+    });
 }

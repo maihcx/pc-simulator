@@ -1,5 +1,6 @@
 import { MainService } from "./main-service";
 import { SystemEventsManager } from "./system-events-manager";
+import { LocalStored } from "./local-stored";
 
 export class SystemColors {
 
@@ -10,12 +11,32 @@ export class SystemColors {
      */
     constructor(_MainService, _SystemEventsManager) {
         let globalThis = this;
+        SystemColors.#private_SYSEvent = _SystemEventsManager;
+        SystemColors.#private_SYSService = _MainService;
         this.internal_event = _SystemEventsManager;
         this.MainService = _MainService;
-        this.Colors = {backgroundColors: {}};
+        this.Colors = {
+            backgroundColors: {}, 
+            level: {
+                level1: 'Color_1',
+                level2: 'Color_2',
+                level3: 'Color_3',
+                level4: 'Color_4',
+                level5: 'Color_5',
+                level6: 'Color_6',
+                level7: 'Color_7',
+                level8: 'Color_8',
+                level10: 'Color_11',
+                level12: 'Color_12',
+                level13: 'Color_13',
+                level14: 'Color_14',
+                level15: 'Color_15',
+                level16: 'Color_16',
+            }
+        };
 
         // config
-        this.blurFilterLevel = 20;
+        this.blurFilterLevel = 7;
         this.blurFilterClassName = 'sys-blur-filter';
         this.blurFilterControl = this.MainService.LIB.nodeCreator({node: 'style', innerHTML: `
             .${this.blurFilterClassName} {
@@ -24,7 +45,7 @@ export class SystemColors {
             }
         `});
 
-        this.TransparentRatio = 0.90;
+        this.TransparentRatio = 0.80;
         this.Transparent = true;
 
         this.internal_event.event.add('backgroundchange', function(event, element) {
@@ -35,6 +56,108 @@ export class SystemColors {
         document.head.appendChild(this.blurFilterControl);
 
         this.elementsApplyFillter = {blur: [], color: []};
+
+        // theme init
+        SystemColors.#private_ThemeProcessor();
+
+        this.internal_event.event.add('systhemechanged', function(event, theme) {
+            globalThis.colorRWM(theme);
+        });
+        this.internal_event.event.add('appthemechanged', function(event, theme) {
+            globalThis.colorRWM(theme);
+        });
+    }
+
+    static ThemeColor = {
+        AUTO: 0,
+        LIGHT: 1,
+        DARK: 2
+    }
+
+    static ApplicationTheme = {
+        /**
+         * @param {SystemColors.ThemeColor} value 
+         */
+        set Theme(value) {
+            if (Number(value) != this.Theme) {
+                LocalStored.set('theme_color_mode', value);
+                SystemColors.#private_SystemColorStored.ThemeStored = value;
+                SystemColors.#private_ThemeProcessor();
+            }
+        },
+        get Theme() {
+            return SystemColors.#private_SystemColorStored.ThemeStored;
+        }
+    }
+
+    static SystemTheme = {
+        get Theme() {
+            return SystemColors.ThemeColor[SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION.matches ? "DARK" : "LIGHT"];
+        }
+    }
+
+    static #private_SYSEvent = null;
+    static #private_SYSService = null;
+    static #private_SystemColorStored = {
+        ThemeStored: Number(LocalStored.get('theme_color_mode') ?? SystemColors.ThemeColor.AUTO),
+        WINDOW_MEDIA_CONTRUCTION: window.matchMedia('(prefers-color-scheme: dark)'),
+        RawArrayRGB: {Theme: 0, ArrayRGB: []},
+        FilterApply: {backgroundColor: [], borderColor: []}
+    }
+    static #private_AutoTheme = {
+        get isBinded() {
+            return this.protect_isBinded;
+        },
+        set isBinded(value) {
+            if (value == this.protect_isBinded) return;
+            this.protect_isBinded = value;
+            let SYSSERVICE = SystemColors.#private_SYSService;
+            if (value == true) {
+                let WINDOW_MEDIA_CONTRUCTION = SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION;
+                SYSSERVICE.LIB.bindEvents(WINDOW_MEDIA_CONTRUCTION, {change: this.EVENT_WORKER_BINDING});
+            }
+            else {
+                SYSSERVICE.LIB.unbindEvents(WINDOW_MEDIA_CONTRUCTION, {change: this.EVENT_WORKER_BINDING});
+            }
+        },
+        protect_isBinded: false,
+        EVENT_WORKER_BINDING: function(event) {
+            if (SystemColors.#private_AutoTheme.isBinded) {
+                SystemColors.#private_SYSEvent.eventTriger('systhemechanged', SystemColors.ThemeColor[event.matches ? "DARK" : "LIGHT"]);
+            }
+        }
+    }
+    static #private_ThemeProcessor() {
+        let private_AutoTheme = SystemColors.#private_AutoTheme,
+            WIN_MEDIA = SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION;
+        if (this.ApplicationTheme.Theme == SystemColors.ThemeColor.AUTO) {
+            private_AutoTheme.isBinded = true;
+        }
+        else {
+            private_AutoTheme.isBinded = false;
+            SystemColors.#private_SYSEvent.eventTriger('systhemechanged', SystemColors.ThemeColor[WIN_MEDIA.matches ? "DARK" : "LIGHT"]);
+        }
+        SystemColors.#private_SYSEvent.eventTriger('appthemechanged', SystemColors.ApplicationTheme.Theme);
+    }
+
+    /**
+     * RWM (Remake With Wode)
+     */
+    colorRWM(colorMode) {
+        if (colorMode == SystemColors.ThemeColor.AUTO) {
+            colorMode = SystemColors.SystemTheme.Theme;
+        }
+        
+        let colorData = SystemColors.#private_SystemColorStored.RawArrayRGB;
+        if (colorMode != colorData.Theme) {
+            colorData.ArrayRGB = colorData.ArrayRGB.reverse();
+            colorData.Theme = colorMode;
+            this.colorsBuilder(colorData.ArrayRGB);
+
+            this.applyBackgroundColor();
+            this.applyBorderColor();
+
+        }
     }
 
     applyBlurFilter(...elements) {
@@ -45,28 +168,63 @@ export class SystemColors {
         }
     }
 
-    applyBackgroundColor(rgbColor, ...elements) {
-        if (elements) {
-            let rgba_string = ''
+    applyBackgroundColor(colorlv, ...elements) {
+        if (elements.length) {
+            let rgba_string = '',
+                rgbColor = this.Colors[colorlv]
+            ;
             if (this.Transparent) {
                 rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${this.TransparentRatio})`;
             }
             else {
                 rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1)`;
             }
+            SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.push({items: elements, colorlv: colorlv});
             elements.forEach(element => {
                 element && (element.style.backgroundColor = rgba_string);
             });
         }
+        else {
+            let globalThis = this;
+            SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.forEach(rawElement => {
+                let rgba_string = '',
+                    rgbColor = globalThis.Colors[rawElement.colorlv];
+                ;
+                if (this.Transparent) {
+                    rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${this.TransparentRatio})`;
+                }
+                else {
+                    rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1)`;
+                }
+                
+                rawElement.items.forEach(element => {
+                    element && (element.style.backgroundColor = rgba_string);
+                });
+            });
+        }
     }
 
-    applyBorderColor(rgbColor, ...elements) {
-        if (elements) {
-            let rgb_string = `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`;
+    applyBorderColor(colorlv, ...elements) {
+        if (elements.length) {
+            let rgbColor = this.Colors[colorlv],
+                rgb_string = `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`
+            ;
+            SystemColors.#private_SystemColorStored.FilterApply.borderColor.push({items: elements, colorlv: colorlv});
             elements.forEach(element => {
                 if (element) {
                     element.style.borderColor = rgb_string;
                 }
+            });
+        }
+        else {
+            let globalThis = this;
+            SystemColors.#private_SystemColorStored.FilterApply.borderColor.forEach(rawElement => {
+                let rgbColor = globalThis.Colors[rawElement.colorlv],
+                    rgb_string = `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`
+                ;
+                rawElement.items.forEach(element => {
+                    element && (element.style.borderColor = rgb_string);
+                });
             });
         }
     }
@@ -74,12 +232,21 @@ export class SystemColors {
     setPrimaryImage(imgEl) {
         this.imgElement = imgEl;
         // let rgb = this.getAverageRGB(this.imgElement);
-        this.colorsBuilder(this.colorAnalysis(this.imgElement));
+        let rgbArray = this.colorAnalysis(this.imgElement),
+            sysTheme = SystemColors.SystemTheme.Theme;
+
+        if (sysTheme == SystemColors.ThemeColor.LIGHT) {
+            rgbArray = rgbArray.reverse();
+        }
+        SystemColors.#private_SystemColorStored.RawArrayRGB.ArrayRGB = rgbArray;
+        SystemColors.#private_SystemColorStored.RawArrayRGB.Theme = sysTheme;
+        this.colorsBuilder(rgbArray);
         // this.colorsBuilder(rgb);
         this.internal_event.eventTriger('colorchange', this.Colors);
     }
 
     colorsBuilder(rgbArray) {
+        // this.Colors = {};
         for (let index = 1; index <= rgbArray.length; index++) {
             const color = rgbArray[index-1];
             this.Colors[[`Color_${index}`]] = color;
@@ -129,7 +296,7 @@ export class SystemColors {
         
     }
 
-    colorAnalysis(imgEl, colorLevel = 1) {
+    colorAnalysis(imgEl, colorLevel = 0) {
         let height = 0, 
             width = 0, 
             canvas = document.createElement('canvas')

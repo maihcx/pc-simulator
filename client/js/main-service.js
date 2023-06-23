@@ -175,7 +175,6 @@ export class MainService {
                             bindEvents.forEach(event_name => {
                                 const handler = bindOption[event_name];
                                 global_this.LIB.eventStored.setEvent(item, event_name, handler, options);
-
                                 item.addEventListener(event_name, handler, options);
                             });
                         });
