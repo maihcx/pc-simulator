@@ -58,7 +58,7 @@ window.onload = function() {
     });
 
     
-    taskbarIconSetup(() => {
+    function taskbarIconSetup() {
         let startIcon = new IconControl(mainService);
         startIcon.setIconSVG(SVGFolder + 'window-icon.svg');
         taskbar.TaskbarIcons.add(startIcon);
@@ -70,5 +70,5 @@ window.onload = function() {
         let explorerIcon = new IconControl(mainService);
         explorerIcon.setIconSVG(SVGFolder + 'folder-explorer.svg');
         taskbar.TaskbarIcons.add(explorerIcon);
-    });
+    };
 }
