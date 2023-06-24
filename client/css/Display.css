@@ -10,6 +10,7 @@
 html, body, .main-window {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 .main-window {
     position: relative;

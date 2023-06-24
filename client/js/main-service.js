@@ -210,6 +210,25 @@ export class MainService {
                         });
                     }
                 }
+            }, dateTimeNow(format = "dd/mm/yy h:i:s") {
+                let currentdate = new Date(); 
+                
+                let map = {
+                    h: currentdate.getHours().toString(),
+                    i: currentdate.getMinutes().toString(),
+                    s: currentdate.getSeconds().toString(),
+                    mm: (currentdate.getMonth() + 1).toString(),
+                    dd: currentdate.getDate().toString(),
+                    yy: currentdate.getFullYear().toString().slice(-2)
+                };
+
+                (map.h.length == 1) && (map.h = '0' + map.h);
+                (map.i.length == 1) && (map.i = '0' + map.i);
+                (map.s.length == 1) && (map.s = '0' + map.s);
+                (map.dd.length == 1) && (map.dd = '0' + map.dd);
+                (map.mm.length == 1) && (map.mm = '0' + map.mm);
+            
+                return format.replace(/h|i|s|mm|dd|yy|yyyy/gi, matched => map[matched])
             }
         }
         this.ControlsStore = {};

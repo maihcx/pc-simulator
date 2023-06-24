@@ -7,6 +7,8 @@ import { Taskbar } from './taskbar';
 import { DesktopBackground } from './desktop-background';
 import { Locales } from './locales';
 import { SystemColors } from './system-colors';
+import { IconControl } from './subitems/taskbar-icon';
+import { CenterConsole } from "./center-console";
 
 window.onload = function() {
     const eventManager = new SystemEventsManager(),
@@ -16,32 +18,56 @@ window.onload = function() {
           systemColors = new SystemColors(mainService, eventManager),
           desktop = new Desktop(mainService, eventManager),
           desktopBackground = new DesktopBackground(mainService, eventManager),
+          consolebar = new CenterConsole(mainService, eventManager, locales),
           taskbar = new Taskbar(mainService, eventManager)
     ;
 
     mainService.CSSClassLoad(Display);
     mainService.CSSClassLoad(Desktop);
     mainService.CSSClassLoad(DesktopBackground);
+    mainService.CSSClassLoad(CenterConsole);
     mainService.CSSClassLoad(Taskbar);
 
-    display.render(desktopBackground, desktop, taskbar);
+    display.render(desktopBackground, consolebar, desktop, taskbar);
 
-    desktopBackground.setBackgroundImage('1.jpg');
+    desktopBackground.setBackgroundImage('wall1.jpg');
     desktopBackground.setBackgroundImageScale(desktopBackground.BackgroundImageScaleType.Center);
 
     // locales.set(locales.languages.en_us);
     console.log(locales.get('welcome'));
 
+    let taskbarElement = taskbar.getSubTaskbar(),
+        SVGFolder = './sources/icons/';
+
+    //#taskbar icons
+
+        taskbarIconSetup();
+
+    //#end taskbar icons
+
     // set primary color for controls
-    let taskbarElement = taskbar.getSubTaskbar();
     eventManager.event.add('colorchange', function(event, Colors) {
         systemColors.applyBlurFilter(taskbarElement);
         systemColors.applyBackgroundColor(systemColors.Colors.level.level2, taskbarElement);
-        systemColors.applyBorderColor(systemColors.Colors.level.level8, taskbarElement);
+        systemColors.applyBorderColor(systemColors.Colors.level.level9, taskbarElement);
         // systemColors.applyPrimaryColor(taskbarElement);
     }, {once: true});
 
     eventManager.event.add('systhemechanged', function(event, element) {
         
     });
+
+    function taskbarIconSetup() {
+        let startIcon = new IconControl(mainService);
+        startIcon.setIconSVG(SVGFolder + 'window-icon.svg');
+        taskbar.TaskbarIcons.add(startIcon);
+
+        let searchIcon = new IconControl(mainService);
+        searchIcon.setIconSVG(SVGFolder + 'search-icon.svg');
+        taskbar.TaskbarIcons.add(searchIcon);
+
+        let explorerIcon = new IconControl(mainService);
+        explorerIcon.setIconSVG(SVGFolder + 'folder-explorer.svg');
+        taskbar.TaskbarIcons.add(explorerIcon);
+    }
 }

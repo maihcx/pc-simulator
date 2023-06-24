@@ -15,7 +15,7 @@ export class Taskbar {
         this.MainControl.appendChild(this.Subcontrol)
         this.TaskbarIcons = {
             add: function(TIconElement) {
-                global_this.MainControl.appendChild(TIconElement.render());
+                global_this.Subcontrol.appendChild(TIconElement.render());
             }
         }
     }

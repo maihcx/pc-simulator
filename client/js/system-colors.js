@@ -26,6 +26,7 @@ export class SystemColors {
                 level6: 'Color_6',
                 level7: 'Color_7',
                 level8: 'Color_8',
+                level9: 'Color_9',
                 level10: 'Color_11',
                 level12: 'Color_12',
                 level13: 'Color_13',
