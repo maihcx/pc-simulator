@@ -22,14 +22,6 @@ export class CenterConsole {
         this.CenterControl = LIB.nodeCreator({node: 'div', classList: 'center-console-view-content'});
         this.RightControl = LIB.nodeCreator({node: 'div', classList: 'right-console-view-content'});
 
-        // center control cursor
-        this.#private_MakeCenterCursor();
-
-        // right control cursor
-        this.#private_MakeRightCursor();
-
-        this.MainControl.append(this.LeftControl, this.CenterControl, this.RightControl);
-
         this.SystemAppNames = [
             'Desktop'
         ]
@@ -49,6 +41,14 @@ export class CenterConsole {
                 }
             }
         }
+
+        // center control cursor
+        this.#private_MakeCenterCursor();
+
+        // right control cursor
+        this.#private_MakeRightCursor();
+
+        this.MainControl.append(this.LeftControl, this.CenterControl, this.RightControl);
     }
 
     #private_Stored = {
@@ -88,10 +88,10 @@ export class CenterConsole {
         ;
         // cursor app open
         this.appCursorPanel = LIB.nodeCreator({node: 'div', classList: 'app-cursor-panel'});
-        console.log(globalThis.appCursor);
+        console.log(this);
         this.appCursor.add('Desktop', './sources/icons/window-icon.svg', globalThis.Locales.get('desktop'), null);
 
-        this.RightControl.append(this.appCursorPanel);
+        this.CenterControl.append(this.appCursorPanel);
     }
 
     render() {
