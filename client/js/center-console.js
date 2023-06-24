@@ -88,7 +88,6 @@ export class CenterConsole {
         ;
         // cursor app open
         this.appCursorPanel = LIB.nodeCreator({node: 'div', classList: 'app-cursor-panel'});
-        console.log(this);
         this.appCursor.add('Desktop', './sources/icons/window-icon.svg', globalThis.Locales.get('desktop'), null);
 
         this.CenterControl.append(this.appCursorPanel);

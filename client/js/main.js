@@ -28,8 +28,6 @@ window.onload = function() {
     mainService.CSSClassLoad(CenterConsole);
     mainService.CSSClassLoad(Taskbar);
 
-    display.render(desktopBackground, consolebar, desktop, taskbar);
-
     desktopBackground.setBackgroundImage('wall1.jpg');
     desktopBackground.setBackgroundImageScale(desktopBackground.BackgroundImageScaleType.Center);
 
@@ -51,13 +49,16 @@ window.onload = function() {
         systemColors.applyBackgroundColor(systemColors.Colors.level.level2, taskbarElement);
         systemColors.applyBorderColor(systemColors.Colors.level.level9, taskbarElement);
         // systemColors.applyPrimaryColor(taskbarElement);
+
+        display.render(desktopBackground, consolebar, desktop, taskbar);
     }, {once: true});
 
     eventManager.event.add('systhemechanged', function(event, element) {
         
     });
 
-    function taskbarIconSetup() {
+    
+    taskbarIconSetup(() => {
         let startIcon = new IconControl(mainService);
         startIcon.setIconSVG(SVGFolder + 'window-icon.svg');
         taskbar.TaskbarIcons.add(startIcon);
@@ -69,5 +70,5 @@ window.onload = function() {
         let explorerIcon = new IconControl(mainService);
         explorerIcon.setIconSVG(SVGFolder + 'folder-explorer.svg');
         taskbar.TaskbarIcons.add(explorerIcon);
-    }
+    });
 }

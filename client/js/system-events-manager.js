@@ -1,18 +1,23 @@
 export class SystemEventsManager {
     constructor() {
         let globalThis = this;
-        this.eventStored = {};
         this.event = {
             add: function(type, callback, option = null) {
-                !globalThis.eventStored[type] && (globalThis.eventStored[type] = []);
-                globalThis.eventStored[type].push({callback: callback, option: option});
+                !globalThis.#private_EventStored[type] && (globalThis.#private_EventStored[type] = []);
+                globalThis.#private_EventStored[type].push({callback: callback, option: option});
             }
+        }
+        this.TimerEvent = {
+
         }
     }
 
+    #private_EventStored = {}
+    #private_TimerStored = {}
+
     eventTriger(evType, ...eventData) {
-        if (!this.eventStored[evType]) return false;
-        let evStored = this.eventStored[evType];
+        if (!this.#private_EventStored[evType]) return false;
+        let evStored = this.#private_EventStored[evType];
         if (evStored.length > 0) {
             for (let index = 0; index < evStored.length; index++) {
                 const event_data = evStored[index];
