@@ -1,15 +1,40 @@
-.center-console-view {
+@keyframes slideInFromTop {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* flex */
+.center-console-view, 
+.right-console-view-content .date-time-view,
+.left-console-view-content, 
+.center-console-view-content, 
+.right-console-view-content,
+.app-cursor-group,
+.app-cursor-panel, 
+.app-cursor-item,
+.title-cursor-item {
     display: flex;
+    align-items: center;
+}
+/* transistion */
+.center-console-view * {
+    transition: all 200ms;
+}
+.center-console-view {
+    animation: 300ms ease-in-out 0s 1 slideInFromTop;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: stretch;
     z-index: 2;
-    padding: 8px;
+    padding: 8px 12px;
     gap: 5px;
 }
 .right-console-view-content .date-time-view {
-    display: flex;
     gap: 10px;
 }
 .right-console-view-content {
@@ -17,4 +42,68 @@
 }
 .date-time-view {
     text-align: right;
+}
+/* app cursor */
+.left-console-view-content, .center-console-view-content, .right-console-view-content {
+    flex: 1;
+}
+.left-console-view-content {
+    justify-content: left;
+}
+.center-console-view-content {
+    flex: 3;
+    justify-content: center;
+}
+.right-console-view-content {
+    justify-content: right;
+}
+.app-cursor-title {
+    padding: 0 7px;
+}
+.app-cursor-group {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    border-radius: 6px;
+    padding: 5px;
+    /* padding-right: 20px; */
+    border-width: 1px;
+    border-style: solid;
+}
+.app-cursor-panel {
+
+}
+.app-cursor-item {
+    align-items: center;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+.icon-cursor-item {
+    width: 25px;
+    height: 25px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+}
+.title-cursor-item {
+    overflow: hidden;
+    display: block;
+    white-space: nowrap;
+    width: 0px;
+    /* height: 100%; */
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+.app-cursor-item.active {
+    
+}
+.app-cursor-item.active .title-cursor-item {
+    width: 105px;
+    text-overflow: ellipsis;
+    padding: 0 0 0 3px;
 }

@@ -10,7 +10,7 @@ import { SystemColors } from './system-colors';
 import { IconControl } from './subitems/taskbar-icon';
 import { CenterConsole } from "./center-console";
 
-window.onload = function() {
+window.onload = async function() {
     const eventManager = new SystemEventsManager(),
           mainService = new MainService(),
           locales = new Locales(mainService, eventManager),
@@ -37,17 +37,24 @@ window.onload = function() {
     let taskbarElement = taskbar.getSubTaskbar(),
         SVGFolder = './sources/icons/';
 
-    //#taskbar icons
-
-        taskbarIconSetup();
-
-    //#end taskbar icons
+    // taskbar icons
+    taskbarIconSetup();
+    // end taskbar icons
 
     // set primary color for controls
+    consolebar.setAppCursorColor({
+        background: systemColors.getBackgroundColorClass(systemColors.Colors.level.level9),
+        hover: systemColors.getHoverColorClass(systemColors.Colors.level.level10),
+        textColor: systemColors.getTextColorClass(systemColors.Colors.level.level22)
+    });
+
+    systemColors.applyBlurFilter(taskbarElement, consolebar.appCursorGroup);
+    systemColors.applyBackgroundColor(systemColors.Colors.level.level3, taskbarElement, consolebar.appCursorGroup);
+    systemColors.applyBorderColor(systemColors.Colors.level.level8, taskbarElement, consolebar.appCursorGroup);
+
+
+    // when color change then system load complete
     eventManager.event.add('colorchange', function(event, Colors) {
-        systemColors.applyBlurFilter(taskbarElement);
-        systemColors.applyBackgroundColor(systemColors.Colors.level.level2, taskbarElement);
-        systemColors.applyBorderColor(systemColors.Colors.level.level9, taskbarElement);
         // systemColors.applyPrimaryColor(taskbarElement);
 
         display.render(desktopBackground, consolebar, desktop, taskbar);

@@ -10,7 +10,8 @@ export class SystemColors {
      * @param {SystemEventsManager} _SystemEventsManager
      */
     constructor(_MainService, _SystemEventsManager) {
-        let globalThis = this;
+        let globalThis = this,
+            LIB = _MainService.LIB;
         SystemColors.#private_SYSEvent = _SystemEventsManager;
         SystemColors.#private_SYSService = _MainService;
         this.internal_event = _SystemEventsManager;
@@ -27,19 +28,26 @@ export class SystemColors {
                 level7: 'Color_7',
                 level8: 'Color_8',
                 level9: 'Color_9',
-                level10: 'Color_11',
+                level10: 'Color_10',
+                level11: 'Color_11',
                 level12: 'Color_12',
                 level13: 'Color_13',
                 level14: 'Color_14',
                 level15: 'Color_15',
                 level16: 'Color_16',
+                level17: 'Color_17',
+                level18: 'Color_18',
+                level19: 'Color_19',
+                level20: 'Color_20',
+                level21: 'Color_21',
+                level22: 'Color_22',
             }
         };
 
         // config
         this.blurFilterLevel = 7;
         this.blurFilterClassName = 'sys-blur-filter';
-        this.blurFilterControl = this.MainService.LIB.nodeCreator({node: 'style', innerHTML: `
+        this.blurFilterControl = LIB.nodeCreator({node: 'style', innerHTML: `
             .${this.blurFilterClassName} {
                 -webkit-backdrop-filter: blur(${this.blurFilterLevel}px);
                 backdrop-filter: blur(${this.blurFilterLevel}px);
@@ -49,12 +57,15 @@ export class SystemColors {
         this.TransparentRatio = 0.80;
         this.Transparent = true;
 
+        // color apply
+        this.colorFilter = LIB.nodeCreator({node: 'style'});
+
         this.internal_event.event.add('backgroundchange', function(event, element) {
             globalThis.setPrimaryImage(element);
             globalThis.internal_event.eventTriger('colorready', globalThis.Colors);
         });
 
-        document.head.appendChild(this.blurFilterControl);
+        document.head.append(this.blurFilterControl, this.colorFilter);
 
         this.elementsApplyFillter = {blur: [], color: []};
 
@@ -67,6 +78,11 @@ export class SystemColors {
         this.internal_event.event.add('appthemechanged', function(event, theme) {
             globalThis.colorRWM(theme);
         });
+        this.internal_event.event.add('themechanged', function(event, theme) {
+            globalThis.attachedToSystem();
+        });
+
+        this.attachedToSystem();
     }
 
     static ThemeColor = {
@@ -94,6 +110,15 @@ export class SystemColors {
     static SystemTheme = {
         get Theme() {
             return SystemColors.ThemeColor[SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION.matches ? "DARK" : "LIGHT"];
+        }
+    }
+
+    getTheme() {
+        if (SystemColors.#private_SystemColorStored.ThemeStored == SystemColors.ThemeColor.AUTO) {
+            return SystemColors.SystemTheme.Theme;
+        }
+        else {
+            return SystemColors.ApplicationTheme.Theme;
         }
     }
 
@@ -125,20 +150,65 @@ export class SystemColors {
         EVENT_WORKER_BINDING: function(event) {
             if (SystemColors.#private_AutoTheme.isBinded) {
                 SystemColors.#private_SYSEvent.eventTriger('systhemechanged', SystemColors.ThemeColor[event.matches ? "DARK" : "LIGHT"]);
+                SystemColors.#private_SYSEvent.eventTriger('themechanged', SystemColors.ThemeColor[event.matches ? "DARK" : "LIGHT"]);
             }
         }
     }
     static #private_ThemeProcessor() {
         let private_AutoTheme = SystemColors.#private_AutoTheme,
-            WIN_MEDIA = SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION;
-        if (this.ApplicationTheme.Theme == SystemColors.ThemeColor.AUTO) {
+            WIN_MEDIA = SystemColors.#private_SystemColorStored.WINDOW_MEDIA_CONTRUCTION,
+            sysTheme = SystemColors.ThemeColor[WIN_MEDIA.matches ? "DARK" : "LIGHT"],
+            appTheme = SystemColors.ApplicationTheme.Theme;
+        if (appTheme == SystemColors.ThemeColor.AUTO) {
             private_AutoTheme.isBinded = true;
         }
         else {
             private_AutoTheme.isBinded = false;
-            SystemColors.#private_SYSEvent.eventTriger('systhemechanged', SystemColors.ThemeColor[WIN_MEDIA.matches ? "DARK" : "LIGHT"]);
+            SystemColors.#private_SYSEvent.eventTriger('systhemechanged', sysTheme);
+            SystemColors.#private_SYSEvent.eventTriger('themechanged', appTheme);
         }
-        SystemColors.#private_SYSEvent.eventTriger('appthemechanged', SystemColors.ApplicationTheme.Theme);
+        SystemColors.#private_SYSEvent.eventTriger('appthemechanged', appTheme);
+    }
+
+    attachedToSystem() {
+        let themeValue = '',
+            unthemeValue = '';
+        switch (this.getTheme()) {
+            case 1:
+                themeValue = 'light-theme';
+                unthemeValue = 'dark-theme';
+                break;
+
+            case 2:
+                themeValue = 'dark-theme'
+                unthemeValue = 'light-theme';
+                break;
+        }
+        document.documentElement.classList.add(themeValue);
+        document.documentElement.classList.remove(unthemeValue);
+    }
+
+    getBackgroundColorClass(colorlv) {
+        if (this.Transparent) {
+            colorlv = 'T-' + colorlv;
+        }
+        return `bg-${colorlv}`;
+    }
+
+    getBorderColorClass(colorlv) {
+        return `bd-${colorlv}`;
+    }
+
+    getHoverColorClass(colorlv) {
+        return `hv-${colorlv}`;
+    }
+
+    getActiveColorClass(colorlv) {
+        return `at-${colorlv}`;
+    }
+    
+    getTextColorClass(colorlv) {
+        return `text-${colorlv}`;
     }
 
     /**
@@ -154,10 +224,6 @@ export class SystemColors {
             colorData.ArrayRGB = colorData.ArrayRGB.reverse();
             colorData.Theme = colorMode;
             this.colorsBuilder(colorData.ArrayRGB);
-
-            this.applyBackgroundColor();
-            this.applyBorderColor();
-
         }
     }
 
@@ -171,61 +237,23 @@ export class SystemColors {
 
     applyBackgroundColor(colorlv, ...elements) {
         if (elements.length) {
-            let rgba_string = '',
-                rgbColor = this.Colors[colorlv]
-            ;
-            if (this.Transparent) {
-                rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${this.TransparentRatio})`;
-            }
-            else {
-                rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1)`;
-            }
             SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.push({items: elements, colorlv: colorlv});
+            if (this.Transparent) {
+                colorlv = 'T-' + colorlv;
+            }
             elements.forEach(element => {
-                element && (element.style.backgroundColor = rgba_string);
-            });
-        }
-        else {
-            let globalThis = this;
-            SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.forEach(rawElement => {
-                let rgba_string = '',
-                    rgbColor = globalThis.Colors[rawElement.colorlv];
-                ;
-                if (this.Transparent) {
-                    rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${this.TransparentRatio})`;
-                }
-                else {
-                    rgba_string = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1)`;
-                }
-                
-                rawElement.items.forEach(element => {
-                    element && (element.style.backgroundColor = rgba_string);
-                });
+                element && (element.classList.add(`bg-${colorlv}`));
             });
         }
     }
 
     applyBorderColor(colorlv, ...elements) {
         if (elements.length) {
-            let rgbColor = this.Colors[colorlv],
-                rgb_string = `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`
-            ;
             SystemColors.#private_SystemColorStored.FilterApply.borderColor.push({items: elements, colorlv: colorlv});
             elements.forEach(element => {
                 if (element) {
-                    element.style.borderColor = rgb_string;
+                    element.classList.add(`bd-${colorlv}`);
                 }
-            });
-        }
-        else {
-            let globalThis = this;
-            SystemColors.#private_SystemColorStored.FilterApply.borderColor.forEach(rawElement => {
-                let rgbColor = globalThis.Colors[rawElement.colorlv],
-                    rgb_string = `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`
-                ;
-                rawElement.items.forEach(element => {
-                    element && (element.style.borderColor = rgb_string);
-                });
             });
         }
     }
@@ -248,10 +276,61 @@ export class SystemColors {
 
     colorsBuilder(rgbArray) {
         // this.Colors = {};
+        let html_filter = '',
+            html_filter_bg = '',
+            html_filter_bd = '',
+            html_filter_hv = '',
+            html_filter_at = '',
+            html_textcolor = ''
+        ;
         for (let index = 1; index <= rgbArray.length; index++) {
-            const color = rgbArray[index-1];
-            this.Colors[[`Color_${index}`]] = color;
+            const rawColor = rgbArray[index-1],
+                  colorRGB = `rgb(${rawColor.r}, ${rawColor.g}, ${rawColor.b})`,
+                  colorRGBA = `rgba(${rawColor.r}, ${rawColor.g}, ${rawColor.b}, ${this.TransparentRatio})`
+                ;
+            this.Colors[[`Color_${index}`]] = rawColor;
+
+            html_filter_hv += `
+                .hv-Color_${index}:hover {
+                    background-color: ${colorRGB};
+                }
+                .hv-T-Color_${index}:hover {
+                    background-color: ${colorRGBA};
+                }
+            `;
+
+            html_filter_bd += `
+                .bd-Color_${index} {
+                    border-color: ${colorRGB};
+                }
+            `;
+            
+            html_filter_bg += `
+                .bg-Color_${index} {
+                    background-color: ${colorRGB};
+                }
+                .bg-T-Color_${index} {
+                    background-color: ${colorRGBA};
+                }
+            `;
+
+            html_filter_at += `
+                .at-Color_${index}:active {
+                    background-color: ${colorRGB};
+                }
+                .at-T-Color_${index}:active {
+                    background-color: ${colorRGBA};
+                }
+            `;
+
+            html_textcolor += `
+                .text-Color_${index} {
+                    color: ${colorRGB};
+                }
+            `;
         }
+        html_filter = html_filter_hv + html_filter_bd + html_filter_bg + html_filter_at + html_textcolor;
+        this.colorFilter.innerHTML = html_filter;
     }
 
     getAverageRGB(imgEl) {
@@ -403,6 +482,40 @@ export class SystemColors {
             ];
         };
 
-        return quantization(buildRgb(imageData.data), colorLevel)
+        let colorArray = quantization(buildRgb(imageData.data), colorLevel),
+            lastCount = colorArray.length - 1
+        ;
+        let light_color = this.generateColor({r: 255, g: 255, b: 255}, {r: colorArray[lastCount].r, g: colorArray[lastCount].g, b: colorArray[lastCount].b}, 3),
+            dark_color = this.generateColor({r: colorArray[0].r, g: colorArray[0].g, b: colorArray[0].b}, {r: 0, g: 0, b: 0}, 3)
+        ;
+        colorArray.push(...light_color);
+        colorArray.unshift(...dark_color);
+        return colorArray;
+    }
+
+    generateColor(colorStart,colorEnd,colorCount){
+    
+        // The number of colors to compute
+        var len = colorCount;
+    
+        //Alpha blending amount
+        var alpha = 0.0;
+    
+        var saida = [];
+        
+        for (let i = 0; i < len; i++) {
+            var c = {};
+            alpha += (1.0/len);
+            
+            c.r = colorStart.r * alpha + (1 - alpha) * colorEnd.r;
+            c.g = colorStart.g * alpha + (1 - alpha) * colorEnd.g;
+            c.b = colorStart.b * alpha + (1 - alpha) * colorEnd.b;
+    
+            saida.push(c);
+            
+        }
+        
+        return saida;
+        
     }
 }
