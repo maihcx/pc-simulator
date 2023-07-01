@@ -1,17 +1,17 @@
-import { MainService } from "./main-service";
+import { Core } from "./core";
 import { SystemEventsManager } from "./system-events-manager";
 
 export class Taskbar {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      * @param {SystemEventsManager} _SystemEventsManager 
      */
-    constructor(_MainService, _SystemEventsManager) {
+    constructor(_Core, _SystemEventsManager) {
         let global_this = this;
-        this.MainService = _MainService;
-        this.MainControl = this.MainService.LIB.nodeCreator({node: 'div', classList: 'taskbar-view'});
-        this.Subcontrol = this.MainService.LIB.nodeCreator({node: 'div', classList: 'taskbar-view-content'});
+        this.Core = _Core;
+        this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: 'taskbar-view'});
+        this.Subcontrol = this.Core.LIB.nodeCreator({node: 'div', classList: 'taskbar-view-content'});
         this.MainControl.appendChild(this.Subcontrol)
         this.TaskbarIcons = {
             add: function(TIconElement) {

@@ -3,4 +3,5 @@
     height: 100%;
     background-color: #ffffff00;
     z-index: 2;
+    position: relative;
 }

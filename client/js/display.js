@@ -1,24 +1,30 @@
-import { MainService } from "./main-service";
+import { Core } from "./core";
 import { SystemEventsManager } from "./system-events-manager";
 
 export class Display {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      * @param {SystemEventsManager} _SystemEventsManager 
      */
-    constructor(_MainService, _SystemEventsManager) {
-        this.MainService = _MainService;
+    constructor(_Core, _SystemEventsManager) {
+        let globalThis = this;
+        this.Core = _Core;
+        this.MainControl = _Core.LIB.nodeCreator({node: 'div', classList: 'main-window'});
+        document.body.appendChild(this.MainControl);
+
+        _Core.LIB.bindEvents(this.MainControl, {mousedown: function(event) {
+            event.stopPropagation();
+            _SystemEventsManager.eventTriger('widgetclose');
+        }})
     }
 
     render(...controls) {
-        let my_render = this.MainService.LIB.nodeCreator({node: 'div', classList: 'main-window'}),
-            controlsRender = [];
+        let controlsRender = [];
         controls.forEach(control => {
-            this.MainService.Controls.add(control, control.constructor.name);
+            this.Core.Controls.add(control, control.constructor.name);
             controlsRender.push(control.render());
         });
-        my_render.append(...controlsRender);
-        document.body.appendChild(my_render);
+        this.MainControl.append(...controlsRender);
     }
 }

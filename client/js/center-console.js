@@ -1,20 +1,20 @@
 import { Locales } from "./locales";
-import { MainService } from "./main-service";
+import { Core } from "./core";
 import { SystemEventsManager } from "./system-events-manager";
 
 export class CenterConsole {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      * @param {SystemEventsManager} _SystemEventsManager 
      * @param {Locales} _Locales 
      */
-    constructor(_MainService, _SystemEventsManager, _Locales) {
+    constructor(_Core, _SystemEventsManager, _Locales) {
         let globalThis = this,
-            LIB = _MainService.LIB
+            LIB = _Core.LIB
         ;
         this.Locales = _Locales;
-        this.MainService = _MainService;
+        this.Core = _Core;
         this.internal_event = _SystemEventsManager;
         this.MainControl = LIB.nodeCreator({node: 'div', classList: 'center-console-view'});
 
@@ -62,7 +62,8 @@ export class CenterConsole {
                     }
                     
                     LIB.bindEvents(AppPanel, {
-                        click: function() {
+                        click: function(event) {
+                            event.stopPropagation();
                             appCursors[appName].AppWindow.active(appCursors[appName].AppWindow);
                         }
                     })
@@ -131,7 +132,7 @@ export class CenterConsole {
 
     #private_MakeRightCursor() {
         let globalThis = this,
-            LIB = globalThis.MainService.LIB
+            LIB = globalThis.Core.LIB
         ;
         
         // datetime
@@ -154,7 +155,7 @@ export class CenterConsole {
 
     #private_MakeCenterCursor() {
         let globalThis = this,
-            LIB = globalThis.MainService.LIB
+            LIB = globalThis.Core.LIB
         ;
         // cursor app open
         this.appCursorGroup = LIB.nodeCreator({node: 'div', classList: 'app-cursor-group'});

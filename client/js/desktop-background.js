@@ -1,18 +1,18 @@
-import { MainService } from "./main-service";
+import { Core } from "./core";
 import { SystemEventsManager } from "./system-events-manager";
 
 export class DesktopBackground {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      * @param {SystemEventsManager} _SystemEventsManager 
      */
-    constructor(_MainService, _SystemEventsManager) {
+    constructor(_Core, _SystemEventsManager) {
         let globalThis = this;
         this.internal_event = _SystemEventsManager;
-        this.MainService = _MainService;
-        this.MainControl = this.MainService.LIB.nodeCreator({node: 'div', classList: 'desktop-background', dataset: {scaleType: '0'}});
-        this.BackgroundImageElement = this.MainService.LIB.nodeCreator({node: 'img', classList: 'desktop-background-img'});
+        this.Core = _Core;
+        this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: 'desktop-background', dataset: {scaleType: '0'}});
+        this.BackgroundImageElement = this.Core.LIB.nodeCreator({node: 'img', classList: 'desktop-background-img'});
         this.MainControl.appendChild(this.BackgroundImageElement);
         this.BackgroundImageFolder = './sources/background-images/';
         this.BackgroundImageScaleType = {

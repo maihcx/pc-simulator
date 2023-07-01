@@ -1,16 +1,18 @@
-import { MainService } from "../main-service";
+import { Core } from "../core";
+import { SystemEventsManager } from "../system-events-manager";
 
 export class IconControl {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
+     * @param {SystemEventsManager} _SystemEventsManager 
      */
-    constructor(_MainService) {
+    constructor(_Core, _SystemEventsManager) {
         let globalThis = this;
-        this.MainService = _MainService;
-        this.MainControl = _MainService.LIB.nodeCreator({node: 'div', classList: ['control-element', 'normal']});
-        this.IconControl = _MainService.LIB.nodeCreator({node: 'div', classList: ['icon-element']});
-        // if (!_MainService.LIB.isNullOrEmpty(IconClass)) {
+        this.Core = _Core;
+        this.MainControl = _Core.LIB.nodeCreator({node: 'div', classList: ['control-element', 'normal']});
+        this.IconControl = _Core.LIB.nodeCreator({node: 'div', classList: ['icon-element']});
+        // if (!_Core.LIB.isNullOrEmpty(IconClass)) {
         //     this.MainControl.classList.add(IconClass);
         // }
         this.MainControl.appendChild(this.IconControl);
@@ -23,8 +25,26 @@ export class IconControl {
             }
         }
 
-        this.MainService.LIB.bindEvents(this.MainControl, {
-            mouseup: function() {
+        this.Widget = null;
+
+        this.Core.LIB.bindEvents(this.MainControl, {
+            mousedown: function(event) {
+                event.stopPropagation();
+            },
+            click: function(event) {
+                event.stopPropagation();
+                if (globalThis.Widget) {
+                    if (!globalThis.Widget.isShow) {
+                        _SystemEventsManager.eventTriger('widgetclose');
+                        globalThis.Widget.open(null, globalThis.MainControl);
+                    }
+                    else {
+                        _SystemEventsManager.eventTriger('widgetclose');
+                    }
+                }
+                else {
+                    _SystemEventsManager.eventTriger('widgetclose');
+                }
                 let events = globalThis.#private_IconStored.event;
                 if (events.length) {
                     events.forEach(event => {

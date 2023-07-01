@@ -1,4 +1,4 @@
-import { MainService } from "./main-service";
+import { Core } from "./core";
 import { SystemEventsManager } from "./system-events-manager";
 import { LocalStored } from "./local-stored";
 
@@ -6,16 +6,16 @@ export class SystemColors {
 
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      * @param {SystemEventsManager} _SystemEventsManager
      */
-    constructor(_MainService, _SystemEventsManager) {
+    constructor(_Core, _SystemEventsManager) {
         let globalThis = this,
-            LIB = _MainService.LIB;
+            LIB = _Core.LIB;
         SystemColors.#private_SYSEvent = _SystemEventsManager;
-        SystemColors.#private_SYSService = _MainService;
+        SystemColors.#private_SYSService = _Core;
         this.internal_event = _SystemEventsManager;
-        this.MainService = _MainService;
+        this.Core = _Core;
         this.Colors = {
             backgroundColors: {}, 
             level: {
@@ -39,13 +39,12 @@ export class SystemColors {
                 level18: 'Color_18',
                 level19: 'Color_19',
                 level20: 'Color_20',
-                level21: 'Color_21',
-                level22: 'Color_22',
+                level21: 'Color_21'
             }
         };
 
         // config
-        this.blurFilterLevel = 7;
+        this.blurFilterLevel = 15;
         this.blurFilterClassName = 'sys-blur-filter';
         this.blurFilterControl = LIB.nodeCreator({node: 'style', innerHTML: `
             .${this.blurFilterClassName} {
@@ -54,7 +53,7 @@ export class SystemColors {
             }
         `});
 
-        this.TransparentRatio = 0.80;
+        this.TransparentRatio = 0.70;
         this.Transparent = true;
 
         // color apply
@@ -247,6 +246,30 @@ export class SystemColors {
         }
     }
 
+    applyActiveBackgroundColor(colorlv, ...elements) {
+        if (elements.length) {
+            SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.push({items: elements, colorlv: colorlv});
+            if (this.Transparent) {
+                colorlv = 'T-' + colorlv;
+            }
+            elements.forEach(element => {
+                element && (element.classList.add(`at-${colorlv}`));
+            });
+        }
+    }
+
+    applyHoverBackgroundColor(colorlv, ...elements) {
+        if (elements.length) {
+            SystemColors.#private_SystemColorStored.FilterApply.backgroundColor.push({items: elements, colorlv: colorlv});
+            if (this.Transparent) {
+                colorlv = 'T-' + colorlv;
+            }
+            elements.forEach(element => {
+                element && (element.classList.add(`hv-${colorlv}`));
+            });
+        }
+    }
+
     applyBorderColor(colorlv, ...elements) {
         if (elements.length) {
             SystemColors.#private_SystemColorStored.FilterApply.borderColor.push({items: elements, colorlv: colorlv});
@@ -315,11 +338,11 @@ export class SystemColors {
             `;
 
             html_filter_at += `
-                .at-Color_${index}:active {
-                    background-color: ${colorRGB};
+                .at-Color_${index}:active, .at-Color_${index}.active {
+                    background-color: ${colorRGB} !important;
                 }
-                .at-T-Color_${index}:active {
-                    background-color: ${colorRGBA};
+                .at-T-Color_${index}:active, .at-T-Color_${index}.active {
+                    background-color: ${colorRGBA} !important;
                 }
             `;
 
@@ -377,116 +400,125 @@ export class SystemColors {
     }
 
     colorAnalysis(imgEl, colorLevel = 0) {
-        let height = 0, 
-            width = 0, 
-            canvas = document.createElement('canvas')
-        ;
+        // let height = 0, 
+        //     width = 0, 
+        //     canvas = document.createElement('canvas')
+        // ;
 
-        height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
-        width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+        // height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
+        // width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(imgEl, 0, 0);
+        // const ctx = canvas.getContext("2d");
+        // ctx.drawImage(imgEl, 0, 0);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        // const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        const buildRgb = (imageData) => {
-            const rgbValues = [];
-            for (let i = 0; i < imageData.length; i += 4) {
-                const rgb = {
-                    r: imageData[i],
-                    g: imageData[i + 1],
-                    b: imageData[i + 2],
-                };
-                rgbValues.push(rgb);
-            }
-            return rgbValues;
-        };
+        // const buildRgb = (imageData) => {
+        //     const rgbValues = [];
+        //     for (let i = 0; i < imageData.length; i += 4) {
+        //         const rgb = {
+        //             r: imageData[i],
+        //             g: imageData[i + 1],
+        //             b: imageData[i + 2],
+        //         };
+        //         rgbValues.push(rgb);
+        //     }
+        //     return rgbValues;
+        // };
 
-        const findBiggestColorRange = (rgbValues) => {
-            let rMin = Number.MAX_VALUE;
-            let gMin = Number.MAX_VALUE;
-            let bMin = Number.MAX_VALUE;
+        // const findBiggestColorRange = (rgbValues) => {
+        //     let rMin = Number.MAX_VALUE;
+        //     let gMin = Number.MAX_VALUE;
+        //     let bMin = Number.MAX_VALUE;
           
-            let rMax = Number.MIN_VALUE;
-            let gMax = Number.MIN_VALUE;
-            let bMax = Number.MIN_VALUE;
+        //     let rMax = Number.MIN_VALUE;
+        //     let gMax = Number.MIN_VALUE;
+        //     let bMax = Number.MIN_VALUE;
           
-            rgbValues.forEach((pixel) => {
-                rMin = Math.min(rMin, pixel.r);
-                gMin = Math.min(gMin, pixel.g);
-                bMin = Math.min(bMin, pixel.b);
+        //     rgbValues.forEach((pixel) => {
+        //         rMin = Math.min(rMin, pixel.r);
+        //         gMin = Math.min(gMin, pixel.g);
+        //         bMin = Math.min(bMin, pixel.b);
             
-                rMax = Math.max(rMax, pixel.r);
-                gMax = Math.max(gMax, pixel.g);
-                bMax = Math.max(bMax, pixel.b);
-            });
+        //         rMax = Math.max(rMax, pixel.r);
+        //         gMax = Math.max(gMax, pixel.g);
+        //         bMax = Math.max(bMax, pixel.b);
+        //     });
           
-            const rRange = rMax - rMin;
-            const gRange = gMax - gMin;
-            const bRange = bMax - bMin;
+        //     const rRange = rMax - rMin;
+        //     const gRange = gMax - gMin;
+        //     const bRange = bMax - bMin;
           
-            const biggestRange = Math.max(rRange, gRange, bRange);
-            if (biggestRange === rRange) {
-                return "r";
-            } else if (biggestRange === gRange) {
-                return "g";
-            } else {
-                return "b";
-            }
-        };
+        //     const biggestRange = Math.max(rRange, gRange, bRange);
+        //     if (biggestRange === rRange) {
+        //         return "r";
+        //     } else if (biggestRange === gRange) {
+        //         return "g";
+        //     } else {
+        //         return "b";
+        //     }
+        // };
 
-        const quantization = (rgbValues, depth) => {
-            const MAX_DEPTH = 4;
+        // const quantization = (rgbValues, depth) => {
+        //     const MAX_DEPTH = 4;
           
-            // Base case
-            if (depth === MAX_DEPTH || rgbValues.length === 0) {
-                const color = rgbValues.reduce(
-                    (prev, curr) => {
-                    prev.r += curr.r;
-                    prev.g += curr.g;
-                    prev.b += curr.b;
+        //     // Base case
+        //     if (depth === MAX_DEPTH || rgbValues.length === 0) {
+        //         const color = rgbValues.reduce(
+        //             (prev, curr) => {
+        //             prev.r += curr.r;
+        //             prev.g += curr.g;
+        //             prev.b += curr.b;
             
-                    return prev;
-                    },
-                    {
-                    r: 0,
-                    g: 0,
-                    b: 0,
-                    }
-                );
+        //             return prev;
+        //             },
+        //             {
+        //             r: 0,
+        //             g: 0,
+        //             b: 0,
+        //             }
+        //         );
             
-                color.r = Math.round(color.r / rgbValues.length);
-                color.g = Math.round(color.g / rgbValues.length);
-                color.b = Math.round(color.b / rgbValues.length);
+        //         color.r = Math.round(color.r / rgbValues.length);
+        //         color.g = Math.round(color.g / rgbValues.length);
+        //         color.b = Math.round(color.b / rgbValues.length);
             
-                return [color];
-            }
+        //         return [color];
+        //     }
           
-            /**
-             *  Recursively do the following:
-             *  1. Find the pixel channel (red,green or blue) with biggest difference/range
-             *  2. Order by this channel
-             *  3. Divide in half the rgb colors list
-             *  4. Repeat process again, until desired depth or base case
-             */
-            const componentToSortBy = findBiggestColorRange(rgbValues);
-            rgbValues.sort((p1, p2) => {
-                return p1[componentToSortBy] - p2[componentToSortBy];
-            });
+        //     /**
+        //      *  Recursively do the following:
+        //      *  1. Find the pixel channel (red,green or blue) with biggest difference/range
+        //      *  2. Order by this channel
+        //      *  3. Divide in half the rgb colors list
+        //      *  4. Repeat process again, until desired depth or base case
+        //      */
+        //     const componentToSortBy = findBiggestColorRange(rgbValues);
+        //     rgbValues.sort((p1, p2) => {
+        //         return p1[componentToSortBy] - p2[componentToSortBy];
+        //     });
           
-            const mid = rgbValues.length / 2;
-            return [
-                ...quantization(rgbValues.slice(0, mid), depth + 1),
-                ...quantization(rgbValues.slice(mid + 1), depth + 1),
-            ];
-        };
+        //     const mid = rgbValues.length / 2;
+        //     return [
+        //         ...quantization(rgbValues.slice(0, mid), depth + 1),
+        //         ...quantization(rgbValues.slice(mid + 1), depth + 1),
+        //     ];
+        // };
 
-        let colorArray = quantization(buildRgb(imageData.data), colorLevel),
-            lastCount = colorArray.length - 1
-        ;
-        let light_color = this.generateColor({r: 255, g: 255, b: 255}, {r: colorArray[lastCount].r, g: colorArray[lastCount].g, b: colorArray[lastCount].b}, 3),
-            dark_color = this.generateColor({r: colorArray[0].r, g: colorArray[0].g, b: colorArray[0].b}, {r: 0, g: 0, b: 0}, 3)
+        // let colorArray = quantization(buildRgb(imageData.data), colorLevel),
+        //     lastCount = colorArray.length - 1
+        // ;
+        // let light_color = this.generateColor({r: 255, g: 255, b: 255}, {r: colorArray[lastCount].r, g: colorArray[lastCount].g, b: colorArray[lastCount].b}, 3),
+        //     dark_color = this.generateColor({r: colorArray[0].r, g: colorArray[0].g, b: colorArray[0].b}, {r: 0, g: 0, b: 0}, 3)
+        // ;
+        // colorArray.push(...light_color);
+        // colorArray.unshift(...dark_color);
+        // return colorArray;
+
+        let colorArray = [];
+        colorArray.push(this.getAverageRGB(imgEl));
+        let light_color = this.generateColor({r: 255, g: 255, b: 255}, {r: colorArray[0].r, g: colorArray[0].g, b: colorArray[0].b}, 10),
+            dark_color = this.generateColor({r: colorArray[0].r, g: colorArray[0].g, b: colorArray[0].b}, {r: 0, g: 0, b: 0}, 10)
         ;
         colorArray.push(...light_color);
         colorArray.unshift(...dark_color);

@@ -1,11 +1,11 @@
-import { MainService } from "./main-service";
+import { Core } from "./core";
 
 export class Control {
     /**
      * 
-     * @param {MainService} _MainService 
+     * @param {Core} _Core 
      */
-    constructor(_MainService) {
-        this.MainControl = _MainService.LIB.nodeCreator({node: 'div', classList: 'control-element'})
+    constructor(_Core) {
+        this.MainControl = _Core.LIB.nodeCreator({node: 'div', classList: 'control-element'})
     }
 }
