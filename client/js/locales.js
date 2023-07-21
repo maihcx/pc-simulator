@@ -5,11 +5,11 @@ export class Locales {
 
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
-        this.Core = _Core;
+    constructor(core, systemEventsManager) {
+        this.Core = core;
         this.languages = {
             vi_vn: {id: 'vi_vn', lang: 'vi-vn', name: 'Tiếng Việt - Việt Nam'},
             en_us: {id: 'en_us', lang: 'en-us', name: 'English - United States'},

@@ -4,18 +4,18 @@ import { SystemEventsManager } from "./system-events-manager";
 export class Display {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let globalThis = this;
-        this.Core = _Core;
-        this.MainControl = _Core.LIB.nodeCreator({node: 'div', classList: 'main-window'});
+        this.Core = core;
+        this.MainControl = core.LIB.nodeCreator({node: 'div', classList: 'main-window'});
         document.body.appendChild(this.MainControl);
 
-        _Core.LIB.bindEvents(this.MainControl, {mousedown: function(event) {
+        core.LIB.bindEvents(this.MainControl, {mousedown: function(event) {
             event.stopPropagation();
-            _SystemEventsManager.eventTriger('widgetclose');
+            systemEventsManager.eventTriger('widgetclose');
         }})
     }
 

@@ -4,23 +4,23 @@ import { SystemEventsManager } from "../system-events-manager";
 export class Widget {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let globalThis = this;
-        this.Core = _Core;
+        this.Core = core;
         this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: ['widget-item']});
 
-        this.Type = _Core.FormType.WidgetWindow;
+        this.Type = core.FormType.WidgetWindow;
 
-        _Core.LIB.bindEvents(this.MainControl, {
+        core.LIB.bindEvents(this.MainControl, {
             mousedown: function(event) {
                 event.stopPropagation();
             }
         });
 
-        _SystemEventsManager.event.add('widgetclose', function() {
+        systemEventsManager.event.add('widgetclose', function() {
             globalThis.close();
         });
 

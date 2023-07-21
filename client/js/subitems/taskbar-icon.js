@@ -4,15 +4,15 @@ import { SystemEventsManager } from "../system-events-manager";
 export class IconControl {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let globalThis = this;
-        this.Core = _Core;
-        this.MainControl = _Core.LIB.nodeCreator({node: 'div', classList: ['control-element', 'normal']});
-        this.IconControl = _Core.LIB.nodeCreator({node: 'div', classList: ['icon-element']});
-        // if (!_Core.LIB.isNullOrEmpty(IconClass)) {
+        this.Core = core;
+        this.MainControl = core.LIB.nodeCreator({node: 'div', classList: ['control-element', 'normal']});
+        this.IconControl = core.LIB.nodeCreator({node: 'div', classList: ['icon-element']});
+        // if (!core.LIB.isNullOrEmpty(IconClass)) {
         //     this.MainControl.classList.add(IconClass);
         // }
         this.MainControl.appendChild(this.IconControl);
@@ -35,15 +35,15 @@ export class IconControl {
                 event.stopPropagation();
                 if (globalThis.Widget) {
                     if (!globalThis.Widget.isShow) {
-                        _SystemEventsManager.eventTriger('widgetclose');
+                        systemEventsManager.eventTriger('widgetclose');
                         globalThis.Widget.open(null, globalThis.MainControl);
                     }
                     else {
-                        _SystemEventsManager.eventTriger('widgetclose');
+                        systemEventsManager.eventTriger('widgetclose');
                     }
                 }
                 else {
-                    _SystemEventsManager.eventTriger('widgetclose');
+                    systemEventsManager.eventTriger('widgetclose');
                 }
                 let events = globalThis.#private_IconStored.event;
                 if (events.length) {

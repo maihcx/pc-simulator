@@ -4,13 +4,13 @@ import { SystemEventsManager } from "./system-events-manager";
 export class DesktopBackground {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let globalThis = this;
-        this.internal_event = _SystemEventsManager;
-        this.Core = _Core;
+        this.internal_event = systemEventsManager;
+        this.Core = core;
         this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: 'desktop-background', dataset: {scaleType: '0'}});
         this.BackgroundImageElement = this.Core.LIB.nodeCreator({node: 'img', classList: 'desktop-background-img'});
         this.MainControl.appendChild(this.BackgroundImageElement);

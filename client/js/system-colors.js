@@ -6,16 +6,16 @@ export class SystemColors {
 
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let globalThis = this,
-            LIB = _Core.LIB;
-        SystemColors.#private_SYSEvent = _SystemEventsManager;
-        SystemColors.#private_SYSService = _Core;
-        this.internal_event = _SystemEventsManager;
-        this.Core = _Core;
+            LIB = core.LIB;
+        SystemColors.#private_SYSEvent = systemEventsManager;
+        SystemColors.#private_SYSService = core;
+        this.internal_event = systemEventsManager;
+        this.Core = core;
         this.Colors = {
             backgroundColors: {}, 
             level: {

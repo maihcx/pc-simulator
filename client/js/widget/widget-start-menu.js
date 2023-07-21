@@ -5,17 +5,17 @@ import { Widget } from "./widget";
 export class WidgetStartMenu extends Widget {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
-        super(_Core, _SystemEventsManager);
-        this.Type = _Core.FormType.WidgetTasbar;
+    constructor(core, systemEventsManager) {
+        super(core, systemEventsManager);
+        this.Type = core.FormType.WidgetTasbar;
 
         let globalThis = this;
         this.MainControl.classList.add('start-menu');
 
-        _Core.CSSWidgetClassLoad(WidgetStartMenu);
+        core.CSSWidgetClassLoad(WidgetStartMenu);
 
         
     }

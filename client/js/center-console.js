@@ -5,17 +5,17 @@ import { SystemEventsManager } from "./system-events-manager";
 export class CenterConsole {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
-     * @param {Locales} _Locales 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
+     * @param {Locales} locales 
      */
-    constructor(_Core, _SystemEventsManager, _Locales) {
+    constructor(core, systemEventsManager, locales) {
         let globalThis = this,
-            LIB = _Core.LIB
+            LIB = core.LIB
         ;
-        this.Locales = _Locales;
-        this.Core = _Core;
-        this.internal_event = _SystemEventsManager;
+        this.Locales = locales;
+        this.Core = core;
+        this.internal_event = systemEventsManager;
         this.MainControl = LIB.nodeCreator({node: 'div', classList: 'center-console-view'});
 
         // render panels

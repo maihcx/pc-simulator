@@ -4,12 +4,12 @@ import { SystemEventsManager } from "./system-events-manager";
 export class Taskbar {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
+    constructor(core, systemEventsManager) {
         let global_this = this;
-        this.Core = _Core;
+        this.Core = core;
         this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: 'taskbar-view'});
         this.Subcontrol = this.Core.LIB.nodeCreator({node: 'div', classList: 'taskbar-view-content'});
         this.MainControl.appendChild(this.Subcontrol)

@@ -4,11 +4,11 @@ import { SystemEventsManager } from "./system-events-manager";
 export class WidgetCenter {
     /**
      * 
-     * @param {Core} _Core 
-     * @param {SystemEventsManager} _SystemEventsManager 
+     * @param {Core} core 
+     * @param {SystemEventsManager} systemEventsManager 
      */
-    constructor(_Core, _SystemEventsManager) {
-        this.Core = _Core;
+    constructor(core, systemEventsManager) {
+        this.Core = core;
         this.MainControl = this.Core.LIB.nodeCreator({node: 'div', classList: ['widget-frame']});
     }
 
