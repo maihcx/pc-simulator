@@ -41,7 +41,7 @@ export class Core {
                     }
                 }
                 return queryItems;
-            }, nodeCreator(data) {
+            }, nodeCreator(data = {node: 'div', ...document.createElement('div')}) {
                 let element_creation = document.createElement(data.node);
                 return this.nodeCloner(element_creation, data, true);
             }, nodeCloner(node = document.documentElement, _nodeOption = null, systemNodeCreate = false) {

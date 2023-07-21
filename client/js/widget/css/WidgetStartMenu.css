@@ -1,5 +1,6 @@
 .widget-item.start-menu {
     width: 500px;
-    height: 500px;
+    max-height: 500px;
     display: none;
+    height: 100%;
 }
