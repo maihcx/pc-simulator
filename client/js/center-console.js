@@ -105,9 +105,9 @@ export class CenterConsole {
     #private_Stored = {
         appCursor: {},
         appCursorColor: {
-            background: null,
-            hover: null,
-            textColor: null
+            background: 'null',
+            hover: 'null',
+            textColor: 'null'
         }
     }
     
@@ -161,25 +161,23 @@ export class CenterConsole {
         this.appCursorGroup = LIB.nodeCreator({node: 'div', classList: 'app-cursor-group'});
         this.appCursorPanel = LIB.nodeCreator({node: 'div', classList: 'app-cursor-panel'});
         this.appCursorTitle = LIB.nodeCreator({node: 'div', classList: 'app-cursor-title', textContent: globalThis.Locales.get('applications')});
-        this.internal_event.event.add('colorchange', function(event, Colors) {
-            let desktopApp = globalThis.appCursor.add('Desktop', './sources/icons/window-icon.svg', globalThis.Locales.get('desktop'), {
-                active: function(appView) {
-                    let allApps = globalThis.#private_getAllApp();
-                    for (let AppName in allApps) {
-                        const app = allApps[AppName];
-                        if (appView.AppName == AppName) {
-                            appView.AppPanel.classList.add('active');
-                        }
-                        else {
-                            app.hide();
-                        }
+
+        let desktopApp = globalThis.appCursor.add('Desktop', './sources/icons/window-icon.svg', globalThis.Locales.get('desktop'), {
+            active: function(appView) {
+                let allApps = globalThis.#private_getAllApp();
+                for (let AppName in allApps) {
+                    const app = allApps[AppName];
+                    if (appView.AppName == AppName) {
+                        appView.AppPanel.classList.add('active');
+                    }
+                    else {
+                        app.hide();
                     }
                 }
-            });
-            desktopApp.AppWindow.active(desktopApp.AppWindow);
-        }, {once: true});
+            }
+        });
+        desktopApp.AppWindow.active(desktopApp.AppWindow);
         
-        // });
         this.appCursorGroup.append(this.appCursorTitle, this.appCursorPanel);
         this.CenterControl.append(this.appCursorGroup);
     }
