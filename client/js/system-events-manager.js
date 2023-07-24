@@ -8,12 +8,27 @@ export class SystemEventsManager {
             }
         }
         this.TimerEvent = {
+            set: function(key = 'sys_timing') {
+                return {
+                    setEvent(event) {
+                        globalThis.#private_TimerStored.event[key] = event;
+                        return this;
+                    }, run() {
+                        clearTimeout(globalThis.#private_TimerStored.timer[key]);
+                        globalThis.#private_TimerStored.timer[key] = setTimeout(() => {
+                            globalThis.#private_TimerStored.event[key]();
+                        }, 200);
+                        
+                        return this;
+                    }
+                }
 
+            }
         }
     }
 
     #private_EventStored = {}
-    #private_TimerStored = {}
+    #private_TimerStored = {event: {}, timer: {}}
 
     eventTriger(evType, ...eventData) {
         if (!this.#private_EventStored[evType]) return false;
