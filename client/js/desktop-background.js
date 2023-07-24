@@ -27,7 +27,7 @@ export class DesktopBackground {
        return this.MainControl;
     }
 
-    setBackgroundImage(fileName) {
+    setBackgroundImage(fileName, onComplete = null) {
         let file = `${this.BackgroundImageFolder}${fileName}`,
             globalThis = this
         ;
@@ -36,6 +36,7 @@ export class DesktopBackground {
         img.onload = function () {
             globalThis.BackgroundImageElement.src = img.src;
             globalThis.internal_event.eventTriger('backgroundchange', globalThis.BackgroundImageElement);
+            onComplete && onComplete();
         }
     }
 
