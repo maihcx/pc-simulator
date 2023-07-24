@@ -19,8 +19,10 @@ export class Locales {
         this.localesFolder = './client/js/langs/';
         this.localesFile = `${this.localesFolder}${this.displayLang.lang}.json`;
         this.LanguageData = {};
-        this.load();
+        // this.load();
     }
+
+    #private_CustomLangs = []
 
     getCurrentLang() {
         return this.languages[localStorage.getItem("locales") ?? this.default.id]
@@ -38,18 +40,28 @@ export class Locales {
         return this.LanguageData[keyword];
     }
 
-    load() {
+    load(onComplete = null) {
         this.displayLang = this.getCurrentLang();
         this.localesFile = `${this.localesFolder}${this.displayLang.lang}.json`;
         let globalThis = this;
 
-        this.Core.LIB.XHRSendRequest({
-            method: 'GET', url: this.localesFile,async: false,
-            event: {
-                done: function(obj) {
-                    obj && (globalThis.LanguageData = JSON.parse(obj.data));
-                }
+        this.Core.LIB.queueExcuteTasking([
+            function(resolve) {
+                globalThis.Core.LIB.XHRSendRequest({
+                    method: 'GET', url: globalThis.localesFile, async: true,
+                    event: {
+                        done: function(obj) {
+                            obj && (globalThis.LanguageData = JSON.parse(obj.data));
+
+                            resolve();
+                        }
+                    }
+                })
+            }, function(resolve) {
+                (onComplete) && onComplete();
+
+                resolve();
             }
-        })
+        ])
     }
 }
