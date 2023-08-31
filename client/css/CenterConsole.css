@@ -40,7 +40,7 @@
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: stretch;
-    z-index: 2;
+    z-index: 3;
     padding: 8px 12px;
     gap: 5px;
 }
