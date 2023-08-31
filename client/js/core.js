@@ -422,6 +422,10 @@ export class Core {
         this.#private_CSSLoad('./client/js/widget/css/', classLoad.name);
     }
 
+    CSSLoadCustom(url, classLoad) {
+        this.#private_CSSLoad(url, classLoad.name);
+    }
+
     #private_CSSLoad(cssFolder, classType) {
         if (!this.CSSFiles[classType]) {
             let myJsPath = `${cssFolder}${classType}.css`,

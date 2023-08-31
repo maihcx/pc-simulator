@@ -25,7 +25,8 @@ export class IconControl {
             }
         }
 
-        this.Widget = null;
+        this.Control = null;
+        this.controlType = IconControl.controlType.widget;
 
         this.Core.LIB.bindEvents(this.MainControl, {
             mousedown: function(event) {
@@ -33,17 +34,33 @@ export class IconControl {
             },
             click: function(event) {
                 event.stopPropagation();
-                if (globalThis.Widget) {
-                    if (!globalThis.Widget.isShow) {
-                        systemEventsManager.eventTriger('widgetclose');
-                        globalThis.Widget.open(null, globalThis.MainControl);
+                if (globalThis.controlType == IconControl.controlType.widget) {
+                    if (globalThis.Control) {
+                        if (!globalThis.Control.isShow) {
+                            systemEventsManager.eventTriger('widgetclose');
+                            globalThis.Control.open(null, globalThis.MainControl);
+                        }
+                        else {
+                            systemEventsManager.eventTriger('widgetclose');
+                        }
                     }
                     else {
                         systemEventsManager.eventTriger('widgetclose');
                     }
                 }
-                else {
-                    systemEventsManager.eventTriger('widgetclose');
+                else if (globalThis.controlType == IconControl.controlType.window) {
+                    if (globalThis.Control) {
+                        if (!globalThis.Control.isShow) {
+                            systemEventsManager.eventTriger('blurallwindows');
+                            globalThis.Control.open(null, globalThis.MainControl);
+                        }
+                        else {
+                            systemEventsManager.eventTriger('blurallwindows');
+                        }
+                    }
+                    else {
+                        systemEventsManager.eventTriger('blurallwindows');
+                    }
                 }
                 let events = globalThis.#private_IconStored.event;
                 if (events.length) {
@@ -65,5 +82,10 @@ export class IconControl {
 
     render() {
         return this.MainControl;
+    }
+
+    static controlType = {
+        widget: 0,
+        window: 1
     }
 }

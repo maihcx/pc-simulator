@@ -10,8 +10,10 @@ import { SystemColors } from './system-colors';
 import { IconControl } from './subitems/taskbar-icon';
 import { CenterConsole } from "./center-console";
 import { WidgetCenter } from "./widget-center";
+import { WindowCenter } from "./window-center";
 
 import { WidgetStartMenu } from "./widget/widget-start-menu";
+import { FileExplorer } from "./app/file-explorer/file-explorer";
 
 window.onload = async function() {
     const eventManager = new SystemEventsManager(),
@@ -34,7 +36,8 @@ window.onload = async function() {
                   desktopBackground = new DesktopBackground(core, eventManager),
                   consolebar = new CenterConsole(core, eventManager, locales),
                   taskbar = new Taskbar(core, eventManager),
-                  widgetCenter = new WidgetCenter(core, eventManager)
+                  widgetCenter = new WidgetCenter(core, eventManager),
+                  windowCenter = new WindowCenter(core, eventManager)
                 ;
 
             // class load
@@ -44,6 +47,7 @@ window.onload = async function() {
             core.CSSControlClassLoad(CenterConsole);
             core.CSSControlClassLoad(Taskbar);
             core.CSSControlClassLoad(WidgetCenter);
+            core.CSSControlClassLoad(WindowCenter);
             
             core.LIB.queueExcuteTasking([
                 function(resolve) {
@@ -80,6 +84,7 @@ window.onload = async function() {
                 
                     // init desktop widget
                     desktop.addControl(widgetCenter.MainControl);
+                    desktop.addControl(windowCenter.MainControl);
                 
                     // eventManager.event.add('systhemechanged', function(event, element) {
                         
@@ -93,7 +98,8 @@ window.onload = async function() {
                         ;
                         widgetCenter.addWidget(widgetStartMenu);
                         startIcon.setIconSVG(SVGFolder + 'window-icon.svg');
-                        startIcon.Widget = widgetStartMenu;
+                        startIcon.controlType = IconControl.controlType.widget;
+                        startIcon.Control = widgetStartMenu;
                         taskbar.TaskbarIcons.add(startIcon);
                         smartIconInit.push(startIcon.MainControl);
                 
@@ -102,8 +108,13 @@ window.onload = async function() {
                         taskbar.TaskbarIcons.add(searchIcon);
                         smartIconInit.push(searchIcon.MainControl);
                 
-                        let explorerIcon = new IconControl(core, eventManager);
+                        let explorerIcon = new IconControl(core, eventManager),
+                            fileExplorer = new FileExplorer(core, eventManager)
+                        ;
+                        windowCenter.addWindow(fileExplorer);
                         explorerIcon.setIconSVG(SVGFolder + 'folder-explorer.svg');
+                        explorerIcon.controlType = IconControl.controlType.window;
+                        explorerIcon.Control = fileExplorer;
                         taskbar.TaskbarIcons.add(explorerIcon);
                         smartIconInit.push(explorerIcon.MainControl);
                 
