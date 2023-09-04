@@ -15,7 +15,7 @@ export class FileExplorer extends WindowExt {
         this.Type = core.FormType.Window;
 
         let globalThis = this;
-        this.MainControl.classList.add('start-menu');
+        this.MainControl.classList.add('file-explorer');
         this.appName = 'File Explorer';
         this.appId = 'file-explorer';
     }

@@ -1,15 +1,19 @@
 import { Core } from "../core";
 import { SystemEventsManager } from "../system-events-manager";
+import { AppCenter } from "../app-center";
+import { ControlTypes } from "../enum/control-types";
 
 export class IconControl {
     /**
      * 
      * @param {Core} core 
      * @param {SystemEventsManager} systemEventsManager 
+     * @param {AppCenter} appCenter 
      */
-    constructor(core, systemEventsManager) {
+    constructor(core, systemEventsManager, appCenter) {
         let globalThis = this;
         this.Core = core;
+        this.SystemEventsManager = systemEventsManager;
         this.MainControl = core.LIB.nodeCreator({node: 'div', classList: ['control-element', 'normal']});
         this.IconControl = core.LIB.nodeCreator({node: 'div', classList: ['icon-element']});
         // if (!core.LIB.isNullOrEmpty(IconClass)) {
@@ -26,7 +30,8 @@ export class IconControl {
         }
 
         this.Control = null;
-        this.controlType = IconControl.controlType.widget;
+        this.controlType = ControlTypes.Widget;
+        this.AppCenter = appCenter;
 
         this.Core.LIB.bindEvents(this.MainControl, {
             mousedown: function(event) {
@@ -34,34 +39,36 @@ export class IconControl {
             },
             click: function(event) {
                 event.stopPropagation();
-                if (globalThis.controlType == IconControl.controlType.widget) {
-                    if (globalThis.Control) {
-                        if (!globalThis.Control.isShow) {
-                            systemEventsManager.eventTriger('widgetclose');
-                            globalThis.Control.open(null, globalThis.MainControl);
+
+                let controlType = globalThis.Control,
+                    controlContent = appCenter.getControl(globalThis.controlType, controlType)
+                ;
+
+                if (controlType) {
+                    if (controlContent && (!event.shiftKey || globalThis.controlType === ControlTypes.Widget)) {
+                        let controlKeys = Object.keys(controlContent);
+                        if (controlKeys.length == 1) {
+                            controlContent = controlContent[controlKeys[0]];
                         }
                         else {
-                            systemEventsManager.eventTriger('widgetclose');
+                            controlContent = controlContent[controlKeys[0]];
                         }
                     }
                     else {
-                        systemEventsManager.eventTriger('widgetclose');
+                        controlContent = new globalThis.Control(globalThis.Core, globalThis.SystemEventsManager);
+                        appCenter.addControl(globalThis.controlType, controlType, controlContent);
                     }
                 }
-                else if (globalThis.controlType == IconControl.controlType.window) {
-                    if (globalThis.Control) {
-                        if (!globalThis.Control.isShow) {
-                            systemEventsManager.eventTriger('blurallwindows');
-                            globalThis.Control.open(null, globalThis.MainControl);
-                        }
-                        else {
-                            systemEventsManager.eventTriger('blurallwindows');
-                        }
-                    }
-                    else {
-                        systemEventsManager.eventTriger('blurallwindows');
-                    }
+
+                systemEventsManager.eventTriger('blurallwindows', controlContent);
+                systemEventsManager.eventTriger('widgetclose', controlContent);
+                if (controlType) {
+                    controlContent.open(null, globalThis.MainControl);
                 }
+                if (globalThis.controlType == ControlTypes.Window) {
+                    controlContent.focus();
+                }
+
                 let events = globalThis.#private_IconStored.event;
                 if (events.length) {
                     events.forEach(event => {
@@ -82,10 +89,5 @@ export class IconControl {
 
     render() {
         return this.MainControl;
-    }
-
-    static controlType = {
-        widget: 0,
-        window: 1
     }
 }

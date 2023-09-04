@@ -1,0 +1,49 @@
+.window-frame {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    top: 0;
+    overflow: hidden;
+}
+.window-frame.window-window {
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.window-frame.taskbar-window {
+    justify-content: center;
+    align-items: flex-end
+}
+.window-frame > .window-item {
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.widget-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+}
+.widget-frame.window-widget {
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.widget-frame.taskbar-widget {
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 2;
+}
+.widget-frame > .widget-item {
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+}

@@ -32,6 +32,29 @@ export class WindowExt {
         this.SEC_appName = 'Window Ext';
 
         this.Core.CSSLoadCustom(`./client/js/window-ext/`, WindowExt);
+
+        systemEventsManager.event.add('blurallwindows', function() {
+            globalThis.blur();
+        });
+    }
+
+    get isFocus() {
+        return globalThis.MainControl.classList.contains('focus');
+    }
+    set isFocus(value) {
+        let iconElement = this.#private_WindowStored.iconElement;
+        if (value) {
+            this.MainControl.classList.add('focus');
+            if (iconElement) {
+                iconElement.classList.add('active');
+            }
+        }
+        else {
+            this.MainControl.classList.remove('focus');
+            if (iconElement) {
+                iconElement.classList.remove('active');
+            }
+        }
     }
 
     get appId() {
@@ -58,16 +81,11 @@ export class WindowExt {
     }
 
     blur() {
-        let globalThis = this;
-        if (globalThis.isFocus) {
-            globalThis.MainControl.classList.remove('focus');
-            // globalThis.Core.effector(this.MainControl).hideSwipe({queue: 'widget_eff', type: 'bottom'});
-            globalThis.isFocus = false;
-            let element = globalThis.#private_WindowStored.iconElement;
-            if (element) {
-                element.classList.remove('active');
-            }
-        }
+        this.isFocus = false;
+    }
+
+    focus() {
+        this.isFocus = true;
     }
 
     open(event, element) {

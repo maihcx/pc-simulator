@@ -16,6 +16,7 @@ export class Display {
         core.LIB.bindEvents(this.MainControl, {mousedown: function(event) {
             event.stopPropagation();
             systemEventsManager.eventTriger('widgetclose');
+            systemEventsManager.eventTriger('blurallwindows');
         }})
     }
 

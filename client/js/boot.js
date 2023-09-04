@@ -9,8 +9,8 @@ import { Locales } from './locales';
 import { SystemColors } from './system-colors';
 import { IconControl } from './subitems/taskbar-icon';
 import { CenterConsole } from "./center-console";
-import { WidgetCenter } from "./widget-center";
-import { WindowCenter } from "./window-center";
+import { AppCenter } from "./app-center";
+import { ControlTypes } from "./enum/control-types";
 
 import { WidgetStartMenu } from "./widget/widget-start-menu";
 import { FileExplorer } from "./app/file-explorer/file-explorer";
@@ -36,8 +36,7 @@ window.onload = async function() {
                   desktopBackground = new DesktopBackground(core, eventManager),
                   consolebar = new CenterConsole(core, eventManager, locales),
                   taskbar = new Taskbar(core, eventManager),
-                  widgetCenter = new WidgetCenter(core, eventManager),
-                  windowCenter = new WindowCenter(core, eventManager)
+                  appCenter = new AppCenter(core, eventManager, systemColors)
                 ;
 
             // class load
@@ -46,8 +45,7 @@ window.onload = async function() {
             core.CSSControlClassLoad(DesktopBackground);
             core.CSSControlClassLoad(CenterConsole);
             core.CSSControlClassLoad(Taskbar);
-            core.CSSControlClassLoad(WidgetCenter);
-            core.CSSControlClassLoad(WindowCenter);
+            core.CSSControlClassLoad(AppCenter);
             
             core.LIB.queueExcuteTasking([
                 function(resolve) {
@@ -83,44 +81,34 @@ window.onload = async function() {
                     systemColors.applyBorderColor(systemColors.Colors.level.level5, taskbarElement, consolebar.appCursorGroup);
                 
                     // init desktop widget
-                    desktop.addControl(widgetCenter.MainControl);
-                    desktop.addControl(windowCenter.MainControl);
+                    desktop.addControl(...appCenter.show());
                 
                     // eventManager.event.add('systhemechanged', function(event, element) {
                         
                     // });
                     
                     function taskbarIconSetup() {
-                        let startIcon = new IconControl(core, eventManager),
-                            widgetStartMenu = new WidgetStartMenu(core, eventManager),
-                            smartIconInit = [],
-                            widgetStartMenuFace = widgetStartMenu.render()
-                        ;
-                        widgetCenter.addWidget(widgetStartMenu);
+                        let smartIconInit = [];
+
+                        let startIcon = new IconControl(core, eventManager, appCenter);
                         startIcon.setIconSVG(SVGFolder + 'window-icon.svg');
-                        startIcon.controlType = IconControl.controlType.widget;
-                        startIcon.Control = widgetStartMenu;
+                        startIcon.controlType = ControlTypes.Widget;
+                        startIcon.Control = WidgetStartMenu;
                         taskbar.TaskbarIcons.add(startIcon);
                         smartIconInit.push(startIcon.MainControl);
                 
-                        let searchIcon = new IconControl(core, eventManager);
+                        let searchIcon = new IconControl(core, eventManager, appCenter);
                         searchIcon.setIconSVG(SVGFolder + 'search-icon.svg');
                         taskbar.TaskbarIcons.add(searchIcon);
                         smartIconInit.push(searchIcon.MainControl);
                 
-                        let explorerIcon = new IconControl(core, eventManager),
-                            fileExplorer = new FileExplorer(core, eventManager)
-                        ;
-                        windowCenter.addWindow(fileExplorer);
+                        let explorerIcon = new IconControl(core, eventManager, appCenter);
                         explorerIcon.setIconSVG(SVGFolder + 'folder-explorer.svg');
-                        explorerIcon.controlType = IconControl.controlType.window;
-                        explorerIcon.Control = fileExplorer;
+                        explorerIcon.controlType = ControlTypes.Window;
+                        explorerIcon.Control = FileExplorer;
                         taskbar.TaskbarIcons.add(explorerIcon);
                         smartIconInit.push(explorerIcon.MainControl);
                 
-                        systemColors.applyBlurFilter(widgetStartMenuFace);
-                        systemColors.applyBackgroundColor(systemColors.Colors.level.level3, widgetStartMenuFace);
-                        systemColors.applyBorderColor(systemColors.Colors.level.level5, widgetStartMenuFace);
                         systemColors.applyActiveBackgroundColor(systemColors.Colors.level.level11, ...smartIconInit);
                         systemColors.applyHoverBackgroundColor(systemColors.Colors.level.level9, ...smartIconInit);
                     };

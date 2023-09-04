@@ -20,11 +20,14 @@ export class Widget {
             }
         });
 
-        systemEventsManager.event.add('widgetclose', function() {
-            globalThis.close();
+        systemEventsManager.event.add('widgetclose', function(event, target) {
+            if (!target || globalThis.appKey !== target.appKey) {
+                globalThis.close();
+            }
         });
 
-        this.isShow = false;
+        this.appKey = '';
+        // this.isShow = false;
     }
 
     #private_WidgetStored = {
@@ -50,6 +53,8 @@ export class Widget {
     open(event, element) {
         let parentPanel = this.MainControl.parentElement,
             globalThis = this;
+
+        if (globalThis.isShow) return true;
         parentPanel.classList.remove('taskbar-widget', 'window-widget');
         if (globalThis.Type == globalThis.Core.FormType.WidgetTasbar) {
             parentPanel.classList.add('taskbar-widget');

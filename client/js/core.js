@@ -391,6 +391,15 @@ export class Core {
                 ;
                 
                 return M(V(Y(X(d),8*d.length))).toLowerCase();
+            }, keyCreator(length = 8) {
+                var result           = '';
+                var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var charactersLength = characters.length;
+                for ( var i = 0; i < length; i++ ) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                result = "SUPER" + result;
+                return result;
             }
         }
         this.ControlsStore = {};
