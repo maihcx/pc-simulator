@@ -63,12 +63,17 @@ export class IconControl {
                 systemEventsManager.eventTriger('blurallwindows', controlContent);
                 systemEventsManager.eventTriger('widgetclose', controlContent);
                 if (controlType) {
-                    controlContent.open(null, globalThis.MainControl);
+                    if (controlContent.isShow) {
+                        controlContent.close();
+                    }
+                    else {
+                        controlContent.open(null, globalThis.MainControl);
+                    }
                 }
                 if (globalThis.controlType == ControlTypes.Window) {
                     controlContent.focus();
                 }
-
+                
                 let events = globalThis.#private_IconStored.event;
                 if (events.length) {
                     events.forEach(event => {
